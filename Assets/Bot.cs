@@ -185,11 +185,10 @@ public class Bot : MonoBehaviour
         {
             if(Vector3.Distance(this.transform.position, target,transform.position) < 10)
             {
-                return false;
+                return true;
             }
-            return true;
+            return false;
         }
-
 
         // Update is called once per frame
         void Update()

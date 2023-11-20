@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UIElements;
 
 public class Bot : MonoBehaviour
 {
@@ -35,14 +36,14 @@ public class Bot : MonoBehaviour
         float relativeHeading = Vector3.Angle(this.transform.forward, this.transform.TransformVector(target.transform.forward));
         float toTarget = Vector3.Angle(this.transform.forward, this.transform.TransformVector(targetDir));
 
-        if(toTarget > 90 && relativeHeading > 20 || ds.currentSpeed < 0.01f)
+        if (toTarget > 90 && relativeHeading > 20 || ds.currentSpeed < 0.01f)
         {
             Seek(target.transform.position);
             return;
         }
 
 
-        float lookAhead = targetDir.magnitude/(agent.speed + ds.currentSpeed);
+        float lookAhead = targetDir.magnitude / (agent.speed + ds.currentSpeed);
         Seek(target.transform.position + target.transform.forward * lookAhead);
     }
 
@@ -69,7 +70,7 @@ public class Bot : MonoBehaviour
         wanderTarget.Normalize();
         wanderTarget *= wanderRadius;
 
-        Vector3 targerLocal = wanderTarget+ new Vector3(0,0,wanderDistance);
+        Vector3 targerLocal = wanderTarget + new Vector3(0, 0, wanderDistance);
 
         Vector3 targetWorld = this.gameObject.transform.InverseTransformVector(targerLocal);
 
@@ -82,13 +83,13 @@ public class Bot : MonoBehaviour
         float dist = Mathf.Infinity;
         Vector3 chosenSpot = Vector3.zero;
 
-        for(int i = 0; i < World.Instace.GetHiddingSpots().Length; i++)
+        for (int i = 0; i < World.Instace.GetHiddingSpots().Length; i++)
         {
-            Vector3 hideDir = World.Instace.GetHiddingSpots()[i].transform.position- target.transform.position;
+            Vector3 hideDir = World.Instace.GetHiddingSpots()[i].transform.position - target.transform.position;
             Vector3 hidePos = World.Instace.GetHiddingSpots()[i].transform.position + hideDir.normalized * 10;
 
 
-            if(Vector3.Distance(target.transform.position, hidePos) < dist)
+            if (Vector3.Distance(target.transform.position, hidePos) < dist)
             {
                 chosenSpot = hidePos;
                 dist = Vector3.Distance(target.transform.position, hidePos);
@@ -141,11 +142,28 @@ public class Bot : MonoBehaviour
     }
 
 
-
-
-    // Update is called once per frame
-    void Update()
+    bool CanSeeTarget()
     {
-        CleverHide();
+        RaycastHit raycastInfo;
+        Vector3 rayToTarget = target.transform.position - this.transform.position;
+
+        if (Physics.Raycast(this.transform.position, rayToTarget, out raycastInfo))
+        {
+            if (raycastInfo.transform.gameObject.tag == "cop")
+            {
+                return true;
+            }
+            return false;
+        }
+
+        // Update is called once per frame
+        void Update()
+        {
+
+            if (CanSeeTarget())
+            {
+                CleverHide();
+            }
+        }
     }
 }

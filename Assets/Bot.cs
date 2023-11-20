@@ -181,15 +181,27 @@ public class Bot : MonoBehaviour
             coolDown = false;
         }
 
+        bool TargetInRange()
+        {
+            if(Vector3.Distance(this.transform.position, target,transform.position) < 10)
+            {
+                return false;
+            }
+            return true;
+        }
+
 
         // Update is called once per frame
         void Update()
         {
             if (!coolDown)
             {
+                if (!TargetInRange())
                 {
+                    Wander();
                 }
-                if (CanSeeTarget() && CanSeeMe())
+
+                else if (CanSeeTarget() && CanSeeMe())
                 {
 
                     CleverHide();
